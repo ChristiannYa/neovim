@@ -1,17 +1,24 @@
-local nerd_icon = "\u{ebca}"
+local nerd_icon = ""
 
 local count = 9
 
--- holds the indivual keys to open `n` terminal
-local keys = {}
-
--- holds the individual functions that handle closing `n` terminal
-local toggle_offs = {}
-
 local active_id = nil
+local last_id = nil
+
 local names = {}
 for i = 1, count do
 	names[i] = i
+end
+
+local function get_new_terminal_id()
+	for i = 1, count do
+		local t = require("toggleterm.terminal").get(i)
+		local exists = t and t.bufnr and vim.api.nvim_buf_is_valid(t.bufnr)
+		if not exists then
+			return i
+		end
+	end
+	return nil
 end
 
 local function on_open()
@@ -41,7 +48,6 @@ local function on_toggle(n, direction)
 				return
 			end
 
-			-- different direction requested: switch it in place, same session
 			-- different direction requested: switch it in place, same session
 			term:close()
 			vim.schedule(function()
@@ -77,32 +83,15 @@ local function on_toggle(n, direction)
 	end
 end
 
-for i = 1, count do
-	local suffix = tostring(i)
-	local h_keymap = "<leader>to" .. suffix
-	local v_keymap = "<leader>tv" .. suffix
-	local desc = "terminal " .. i
-
-	table.insert(keys, {
-		h_keymap,
-		on_toggle(i, "horizontal"),
-		desc = desc .. " (horizontal)",
-	})
-
-	table.insert(keys, {
-		v_keymap,
-		on_toggle(i, "vertical"),
-		desc = desc .. " (vertical)",
-	})
-
-	table.insert(toggle_offs, function()
-		vim.keymap.set("t", h_keymap, on_toggle(i, "horizontal"), {
-			desc = desc .. " (horizontal)",
-		})
-		vim.keymap.set("t", v_keymap, on_toggle(i, "vertical"), {
-			desc = desc .. " (vertical)",
-		})
-	end)
+local function open_or_switch(direction)
+	return function()
+		local target_id = active_id or last_id or get_new_terminal_id()
+		if not target_id then
+			vim.notify("No free terminal slots (max " .. count .. ")", vim.log.levels.WARN)
+			return
+		end
+		on_toggle(target_id, direction)()
+	end
 end
 
 local function cycle_terminal(step)
@@ -188,7 +177,12 @@ end
 return {
 	"akinsho/toggleterm.nvim",
 	version = "*",
-	keys = keys,
+	keys = {
+		-- Load the plugin the first time any of these keys is pressed
+		"<leader>to",
+		"<leader>tv",
+		"<A-t>",
+	},
 	opts = {
 		size = function(term)
 			if term.direction == "horizontal" then
@@ -209,7 +203,20 @@ return {
 			desc = "focus previous window",
 		})
 
-		vim.keymap.set("t", "<a-d>", function()
+		vim.keymap.set("t", "<a-t>", function()
+			local new_id = get_new_terminal_id()
+			if not new_id then
+				vim.notify("No free terminal slots (max " .. count .. ")", vim.log.levels.WARN)
+				return
+			end
+
+			local current_term = active_id and require("toggleterm.terminal").get(active_id)
+			local direction = (current_term and current_term.direction) or "horizontal"
+
+			on_toggle(new_id, direction)()
+		end, { desc = "Create new terminal" })
+
+		vim.keymap.set("t", "<leader>qq", function()
 			local n = vim.b.toggle_number
 			if not n then
 				return
@@ -217,31 +224,18 @@ return {
 
 			local term = require("toggleterm.terminal").get(n)
 			if term then
-				term:shutdown()
+				term:close()
 			end
 
-			names[n] = n
 			if active_id == n then
+				last_id = n
 				active_id = nil
 			end
 
 			vim.schedule(function()
 				vim.cmd("redrawstatus")
 			end)
-		end, { desc = "delete current terminal" })
-
-		vim.keymap.set("t", "<a-t>", function()
-			local n = vim.b.toggle_number
-			if n then
-				vim.cmd(n .. "ToggleTerm")
-				vim.schedule(function()
-					if active_id == n then
-						active_id = nil
-					end
-					vim.cmd("redrawstatus")
-				end)
-			end
-		end, { desc = "close current terminal" })
+		end, { desc = "Exit current terminal" })
 
 		vim.keymap.set("t", "<a-r>", function()
 			local n = vim.b.toggle_number
@@ -258,9 +252,38 @@ return {
 					vim.cmd("startinsert")
 				end)
 			end)
-		end, { desc = "rename current terminal" })
+		end, { desc = "Rename current terminal" })
 
-		vim.api.nvim_create_autocmd("termopen", {
+		vim.keymap.set("t", "<a-d>", function()
+			local n = vim.b.toggle_number
+			if not n then
+				return
+			end
+
+			local term = require("toggleterm.terminal").get(n)
+			if term then
+				term:shutdown()
+			end
+
+			names[n] = n
+			if active_id == n then
+				last_id = n
+				active_id = nil
+			end
+
+			vim.schedule(function()
+				vim.cmd("redrawstatus")
+			end)
+		end, { desc = "delete current terminal" })
+
+		vim.keymap.set({ "n", "t" }, "<leader>to", open_or_switch("horizontal"), {
+			desc = "Open/switch terminal (horizontal)",
+		})
+		vim.keymap.set({ "n", "t" }, "<leader>tv", open_or_switch("vertical"), {
+			desc = "Open/switch terminal (vertical)",
+		})
+
+		vim.api.nvim_create_autocmd("TermOpen", {
 			group = vim.api.nvim_create_augroup("terminal-yank-insert", {
 				clear = true,
 			}),
@@ -273,7 +296,7 @@ return {
 			end,
 		})
 
-		vim.api.nvim_create_autocmd("termopen", {
+		vim.api.nvim_create_autocmd("TermOpen", {
 			group = vim.api.nvim_create_augroup("terminal-winbar", { clear = true }),
 			pattern = "term://*",
 			callback = function()
@@ -281,7 +304,7 @@ return {
 			end,
 		})
 
-		vim.api.nvim_create_autocmd("winenter", {
+		vim.api.nvim_create_autocmd("WinEnter", {
 			group = vim.api.nvim_create_augroup("terminal-clean-gutter", {
 				clear = true,
 			}),
@@ -296,7 +319,7 @@ return {
 			end,
 		})
 
-		vim.api.nvim_create_autocmd("termclose", {
+		vim.api.nvim_create_autocmd("TermClose", {
 			group = vim.api.nvim_create_augroup("terminal-count-redraw", {
 				clear = true,
 			}),
@@ -341,9 +364,5 @@ return {
 		vim.keymap.set("t", "<a-,>", "<c-\\><c-n><c-w>5<i", {
 			desc = "terminal: decrease width",
 		})
-
-		for _, toggle_off in ipairs(toggle_offs) do
-			toggle_off()
-		end
 	end,
 }

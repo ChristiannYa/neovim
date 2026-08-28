@@ -75,6 +75,10 @@ vim.keymap.set("n", "gdr", function()
 	vim.lsp.buf.references()
 end, { desc = "Go to definition references" })
 
+vim.keymap.set("n", "ca", vim.lsp.buf.code_action, {
+	desc = "Code action",
+})
+
 vim.keymap.set("n", "<leader>dr", function()
 	return ":IncRename " .. vim.fn.expand("<cword>")
 end, { expr = true, desc = "Rename definition" })

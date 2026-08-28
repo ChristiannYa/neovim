@@ -18,6 +18,7 @@ return {
             "lua",
             "cpp",
             "rust",
+            "gdscript"
         },
         highlight = {
             enable = true,
@@ -36,4 +37,3 @@ return {
         })
     end,
 }
-

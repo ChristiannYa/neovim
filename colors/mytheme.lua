@@ -20,7 +20,7 @@ local def_group = {
     LineNr = { fg = theme.foreground_fade, bg = "NONE" },
     CursorLineNr = { fg = theme.accent, bg = "NONE", bold = true },
     CursorLine = { bg = "NONE" },
-    Visual = { fg = theme.background, bg = theme.foreground },
+    Visual = { bg = theme.blend(theme.accent, 0.1) },
     StatusLine = { fg = theme.foreground, bg = "NONE" },
     StatusLineNC = { fg = theme.foreground, bg = "NONE" },
     WinBar = { fg = theme.foreground, bg = "NONE" },
@@ -44,6 +44,8 @@ local def_group = {
 
     Folded = { bg = "NONE" },
     FoldColumn = { fg = theme.foreground_fade, bg = "NONE" },
+
+    LspReferenceTarget = {},
 }
 
 local navic_group = {

@@ -76,7 +76,7 @@ vim.keymap.set("n", "gdr", function()
 end, { desc = "Go to definition references" })
 
 vim.keymap.set("n", "ca", vim.lsp.buf.code_action, {
-	desc = "Code action",
+    desc = "Code action",
 })
 
 vim.keymap.set("n", "<leader>dr", function()

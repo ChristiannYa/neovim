@@ -260,11 +260,13 @@ local rust_group = {
 }
 
 local gds_group = {
+    ["@constant.gdscript"] = { fg = theme.foreground, bold = true },
     ["@type.gdscript"] = { fg = theme.fuchsia },
     ["@attribute.gdscript"] = { fg = theme.mustard },
     ["@number.float.gdscript"] = { fg = theme.blue },
     ["@function.method.call.gdscript"] = { fg = theme.yellow, italic = true },
-    ["@function.builtin.gdscript"] = { fg = theme.yellow }
+    ["@function.builtin.gdscript"] = { fg = theme.yellow },
+    ["@string.special.url.gdscript"] = { fg = theme.grass, underline = true }
 }
 
 local function extend(...)

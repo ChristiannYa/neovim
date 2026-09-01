@@ -47,7 +47,7 @@ _G.godot_has_signals = function()
 end
 
 _G.godot_signal_icon = function()
-    local icon = vim.trim(require("kind_icons").Event)
+    local icon = vim.trim(require("kind_icons").Signal)
     local data = signal_data_by_buf[vim.api.nvim_get_current_buf()]
     if data and data.lines[vim.v.lnum] then
         return icon

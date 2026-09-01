@@ -28,4 +28,5 @@ return {
     Event = " ",
     Operator = "󰆕 ",
     TypeParameter = "󰅲 ",
+    Signal = "󰘊 ",
 }

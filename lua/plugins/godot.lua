@@ -41,6 +41,11 @@ local function place_signal_signs(bufnr)
     signal_data_by_buf[bufnr] = { lines = lines, connections = connections }
 end
 
+_G.godot_has_signals = function()
+    local data = signal_data_by_buf[vim.api.nvim_get_current_buf()]
+    return data ~= nil and next(data.lines) ~= nil
+end
+
 _G.godot_signal_icon = function()
     local icon = require("kind_icons").Event
     local blank = (" "):rep(vim.fn.strdisplaywidth(icon))

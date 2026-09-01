@@ -4,45 +4,72 @@ local function find_scene_file(gd_path)
     return scenes[1]
 end
 
-local function get_signal_methods(tscn_path)
-    local methods = {}
+local function get_signal_connections(tscn_path)
+    local connections = {}
     if not tscn_path or vim.fn.filereadable(tscn_path) == 0 then
-        return methods
+        return connections
     end
     for line in io.lines(tscn_path) do
-        local method = line:match('method="([%w_]+)"')
-        if method then
-            methods[method] = true
-        end
-    end
-    return methods
-end
-
-local signal_lines_by_buf = {}
-
-local function place_signal_signs(bufnr)
-    local gd_path = vim.api.nvim_buf_get_name(bufnr)
-    local methods = get_signal_methods(find_scene_file(gd_path))
-    local lines = {}
-    if not vim.tbl_isempty(methods) then
-        for i, line in ipairs(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)) do
-            local fname = line:match("^func%s+([%w_]+)%s*%(")
-            if fname and methods[fname] then
-                lines[i] = true
+        if line:match("^%[connection ") then
+            local method = line:match('method="([^"]+)"')
+            if method then
+                connections[method] = {
+                    signal = line:match('signal="([^"]+)"'),
+                    from = line:match('from="([^"]+)"'),
+                    to = line:match('to="([^"]+)"'),
+                }
             end
         end
     end
-    signal_lines_by_buf[bufnr] = lines
+    return connections
+end
+
+local signal_data_by_buf = {}
+
+local function place_signal_signs(bufnr)
+    local gd_path = vim.api.nvim_buf_get_name(bufnr)
+    local connections = get_signal_connections(find_scene_file(gd_path))
+    local lines = {}
+    if not vim.tbl_isempty(connections) then
+        for i, line in ipairs(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)) do
+            local fname = line:match("^func%s+([%w_]+)%s*%(")
+            if fname and connections[fname] then
+                lines[i] = fname -- store the method name, not just true
+            end
+        end
+    end
+    signal_data_by_buf[bufnr] = { lines = lines, connections = connections }
 end
 
 _G.godot_signal_icon = function()
     local icon = require("kind_icons").Event
     local blank = (" "):rep(vim.fn.strdisplaywidth(icon))
-    local lines = signal_lines_by_buf[vim.api.nvim_get_current_buf()]
-    if lines and lines[vim.v.lnum] then
+    local data = signal_data_by_buf[vim.api.nvim_get_current_buf()]
+    if data and data.lines[vim.v.lnum] then
         return icon
     end
     return blank
+end
+
+local function show_signal_info()
+    local bufnr = vim.api.nvim_get_current_buf()
+    local data = signal_data_by_buf[bufnr]
+    if not data then
+        return
+    end
+    local lnum = vim.api.nvim_win_get_cursor(0)[1]
+    local method = data.lines[lnum]
+    if not method then
+        vim.notify("Not on a signal handler line", vim.log.levels.INFO)
+        return
+    end
+    local info = data.connections[method]
+    vim.lsp.util.open_floating_preview({
+        "Signal: " .. (info.signal or "?"),
+        "From:   " .. (info.from or "?"),
+        "To:     " .. (info.to or "?"),
+        "Method: " .. method,
+    }, "", { border = "rounded", focusable = false })
 end
 
 return {
@@ -61,9 +88,21 @@ return {
         vim.api.nvim_create_autocmd("BufDelete", {
             pattern = "*.gd",
             callback = function(args)
-                signal_lines_by_buf[args.buf] = nil
+                signal_data_by_buf[args.buf] = nil
             end,
         })
+
+        vim.api.nvim_create_autocmd("FileType", {
+            pattern = "gdscript",
+            callback = function(args)
+                vim.keymap.set("n", "<leader>gds", show_signal_info, {
+                    buffer = args.buf,
+                    desc = "Show Godot signal connection info",
+                })
+            end,
+        })
+
+        vim.api.nvim_create_user_command("GodotSignalInfo", show_signal_info, {})
     end,
     config = function()
         require("lsp").setup({ "gdscript" })

@@ -7,7 +7,7 @@ _G.custom_statuscolumn = function()
     end
     local signal_segment = ""
     if vim.bo.filetype == "gdscript" and _G.godot_has_signals() then
-        signal_segment = "%#GodotSignalIcon#%{%v:lua.godot_signal_icon()%}%* "
+        signal_segment = "%#GodotSignalIcon#%{%v:lua.godot_signal_icon()%}%*"
     end
     return "%s%=%{v:relnum ? v:relnum : v:lnum} " .. signal_segment .. "%#FoldColumn#%{%v:lua.ufo_fold_icon()%}%* "
 end

@@ -1,11 +1,15 @@
 _G.custom_statuscolumn = function()
-	if vim.bo.filetype == "oil" then
-		return "   "
-	end
-	if vim.bo.buftype ~= "" then
-		return ""
-	end
-	return "%s%=%{v:relnum ? v:relnum : v:lnum} %#FoldColumn#%{%v:lua.ufo_fold_icon()%}%* "
+    if vim.bo.filetype == "oil" then
+        return "   "
+    end
+    if vim.bo.buftype ~= "" then
+        return ""
+    end
+    local signal_segment = ""
+    if vim.bo.filetype == "gdscript" then
+        signal_segment = "%#GodotSignalIcon#%{%v:lua.godot_signal_icon()%}%*"
+    end
+    return "%s%=%{v:relnum ? v:relnum : v:lnum} " .. signal_segment .. "%#FoldColumn#%{%v:lua.ufo_fold_icon()%}%* "
 end
 
 vim.o.winborder = "rounded"
@@ -40,19 +44,19 @@ vim.opt.titlestring = "%{fnamemodify(getcwd(), ':t')}@nvim"
 vim.opt.wrap = false
 
 vim.api.nvim_create_autocmd("TextYankPost", {
-	pattern = "*",
-	desc = "Yanking listener",
-	callback = function()
-		vim.hl.on_yank({ higroup = "Visual", timeout = 150 })
-	end,
+    pattern = "*",
+    desc = "Yanking listener",
+    callback = function()
+        vim.hl.on_yank({ higroup = "Visual", timeout = 150 })
+    end,
 })
 
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = "oil",
-	callback = function()
-		vim.opt_local.number = false
-		vim.opt_local.relativenumber = false
-	end,
+    pattern = "oil",
+    callback = function()
+        vim.opt_local.number = false
+        vim.opt_local.relativenumber = false
+    end,
 })
 
 -- avoid saving/restoring cwd, just folds/cursor
@@ -62,18 +66,18 @@ vim.opt.viewoptions:remove("cursor")
 
 -- restore view once ufo's async fold computation has settled
 vim.api.nvim_create_autocmd("BufWinEnter", {
-	pattern = "?*",
-	callback = function()
-		local win = vim.api.nvim_get_current_win()
+    pattern = "?*",
+    callback = function()
+        local win = vim.api.nvim_get_current_win()
 
-		vim.defer_fn(function()
-			if not vim.api.nvim_win_is_valid(win) then
-				return
-			end
-			-- snapshot cursor here, AFTER telescope's jump has already landed
-			local pos_before = vim.api.nvim_win_get_cursor(win)
-			vim.cmd("silent! loadview")
-			pcall(vim.api.nvim_win_set_cursor, win, pos_before)
-		end, 30)
-	end,
+        vim.defer_fn(function()
+            if not vim.api.nvim_win_is_valid(win) then
+                return
+            end
+            -- snapshot cursor here, AFTER telescope's jump has already landed
+            local pos_before = vim.api.nvim_win_get_cursor(win)
+            vim.cmd("silent! loadview")
+            pcall(vim.api.nvim_win_set_cursor, win, pos_before)
+        end, 30)
+    end,
 })

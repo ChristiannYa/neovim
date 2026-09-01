@@ -115,8 +115,8 @@ local blinkcmpmenu_group = {
 }
 
 local ufopreview_group = {
-    UfoFoldedIcon = { fg = theme.foreground, bold = true },
-    UfoMoreMsg = { fg = theme.foreground, bold = true },
+    -- UfoFoldedIcon = { fg = theme.foreground, bold = true },
+    -- UfoMoreMsg = { fg = theme.foreground, bold = true },
 }
 
 local cursor_group = {
@@ -269,6 +269,10 @@ local gds_group = {
     ["@string.special.url.gdscript"] = { fg = theme.grass, underline = true }
 }
 
+local godot_group = {
+    GodotSignalIcon = { fg = theme.foreground_fade, italic = true },
+}
+
 local function extend(...)
     local groups = {}
     for _, tbl in ipairs({ ... }) do
@@ -298,7 +302,8 @@ local groups = extend(
     jsts_group,
     vue_group,
     rust_group,
-    gds_group
+    gds_group,
+    godot_group
 )
 
 for group, opts in pairs(groups) do

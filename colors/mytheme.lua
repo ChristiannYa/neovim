@@ -105,7 +105,7 @@ local blinkcmpkind_group = {
     BlinkCmpKindEnumMember = { fg = theme.purple, bold = true },
     BlinkCmpKindConstant = { fg = theme.foreground },
     BlinkCmpKindStruct = { fg = theme.fuchsia },
-    BlinkCmpKindEvent = { fg = theme.foreground },
+    BlinkCmpKindEvent = { fg = theme.yellow },
     BlinkCmpKindOperator = { fg = theme.foreground },
     -- BlinkCmpKindTypeParameter = { fg = theme.fuchsia },
 }
@@ -266,7 +266,8 @@ local gds_group = {
     ["@number.float.gdscript"] = { fg = theme.blue },
     ["@function.method.call.gdscript"] = { fg = theme.yellow, italic = true },
     ["@function.builtin.gdscript"] = { fg = theme.yellow },
-    ["@string.special.url.gdscript"] = { fg = theme.grass, underline = true }
+    ["@string.special.url.gdscript"] = { fg = theme.grass, underline = true },
+    ["@signal"] = { fg = theme.yellow },
 }
 
 local godot_group = {

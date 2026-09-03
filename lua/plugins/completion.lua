@@ -31,6 +31,11 @@ local rust_override_variants = {
 }
 
 local function resolve_kind_hl(ctx)
+    if vim.bo.filetype == "gdscript" then
+        if ctx.kind == "Event" or (_G.godot_is_signal_handler and _G.godot_is_signal_handler(ctx.label)) then
+            return "BlinkCmpKindGodotSignal"
+        end
+    end
     if ctx.kind == "Function" and ctx.label:match("!%s*[%(%{%[]") then
         return "BlinkCmpKindMacro"
     end
@@ -125,7 +130,7 @@ return {
                         kind_icon = {
                             text = function(ctx)
                                 local icon = ctx.kind_icon
-                                if vim.bo.filetype == "gdscript" and ctx.kind == "Event" then
+                                if vim.bo.filetype == "gdscript" and (ctx.kind == "Event" or (_G.godot_is_signal_handler and _G.godot_is_signal_handler(ctx.label))) then
                                     icon = kind_icons.Signal
                                 end
                                 if ctx.kind == "Struct" and rust_builtin_types[ctx.label] then

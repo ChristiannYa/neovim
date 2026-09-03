@@ -108,6 +108,7 @@ local blinkcmpkind_group = {
     BlinkCmpKindEvent = { fg = theme.grass },
     BlinkCmpKindOperator = { fg = theme.foreground },
     -- BlinkCmpKindTypeParameter = { fg = theme.fuchsia },
+    BlinkCmpKindGodotSignal = { fg = theme.grass },
 }
 
 local blinkcmpmenu_group = {
@@ -272,6 +273,7 @@ local gds_group = {
 
 local godot_group = {
     GodotSignalIcon = { fg = theme.foreground_fade, italic = true },
+    GodotSignalName = { fg = theme.grass },
 }
 
 local function extend(...)

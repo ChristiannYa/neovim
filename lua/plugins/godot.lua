@@ -167,6 +167,17 @@ local function place_signal_signs(bufnr)
     end)
 end
 
+local debounce_timer = nil
+
+local function debounced_place_signal_signs(bufnr)
+    if debounce_timer then
+        debounce_timer:stop()
+    end
+    debounce_timer = vim.defer_fn(function()
+        place_signal_signs(bufnr)
+    end, 300)
+end
+
 _G.godot_has_signals = function()
     local data = signal_data_by_buf[vim.api.nvim_get_current_buf()]
     return data ~= nil and next(data.lines) ~= nil
@@ -213,10 +224,10 @@ return {
     init = function()
         vim.filetype.add({ extension = { gd = "gdscript" } })
 
-        vim.api.nvim_create_autocmd("BufEnter", {
+        vim.api.nvim_create_autocmd({ "BufEnter", "TextChanged", "TextChangedI" }, {
             pattern = "*.gd",
             callback = function(args)
-                place_signal_signs(args.buf)
+                debounced_place_signal_signs(args.buf)
             end,
         })
 

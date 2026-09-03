@@ -29,12 +29,6 @@ local function find_scenes_referencing(gd_path, project_root)
     return result
 end
 
-local function find_scene_file(gd_path)
-    local dir = vim.fn.fnamemodify(gd_path, ":h")
-    local scenes = vim.fn.glob(dir .. "/*.tscn", false, true)
-    return scenes[1]
-end
-
 local function get_signal_connections(scene_paths)
     local connections = {}
     for _, tscn_path in ipairs(scene_paths) do

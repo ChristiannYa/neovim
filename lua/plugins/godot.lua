@@ -9,24 +9,27 @@ local function find_project_root(start_path)
     return nil
 end
 
-local function find_scenes_referencing(gd_path, project_root)
+local function find_scenes_referencing(gd_path, project_root, callback)
     if vim.fn.executable("rg") == 0 then
-        return {}
+        callback({})
+        return
     end
     local rel = gd_path:sub(#project_root + 2)
     local res_path = "res://" .. rel
 
-    local cmd = {
+    vim.system({
         "rg", "--files-with-matches", "--fixed-strings",
         'path="' .. res_path .. '"',
         project_root,
         "--glob", "*.tscn",
-    }
-    local ok, result = pcall(vim.fn.systemlist, cmd)
-    if not ok or vim.v.shell_error ~= 0 then
-        return {}
-    end
-    return result
+    }, { text = true }, function(result)
+        if result.code ~= 0 then
+            vim.schedule(function() callback({}) end)
+            return
+        end
+        local files = vim.split(result.stdout or "", "\n", { trimempty = true })
+        vim.schedule(function() callback(files) end)
+    end)
 end
 
 local function get_signal_connections(scene_paths)
@@ -64,12 +67,9 @@ end
 local signal_data_by_buf = {}
 local hl_ns = vim.api.nvim_create_namespace("godot_signal_hl")
 
-local function place_signal_signs(bufnr)
-    local gd_path = vim.api.nvim_buf_get_name(bufnr)
-    local project_root = find_project_root(gd_path)
-    local connections = {}
-    if project_root then
-        connections = get_signal_connections(find_scenes_referencing(gd_path, project_root))
+local function apply_signal_data(bufnr, connections)
+    if not vim.api.nvim_buf_is_valid(bufnr) then
+        return
     end
 
     local buf_lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
@@ -78,7 +78,6 @@ local function place_signal_signs(bufnr)
 
     vim.api.nvim_buf_clear_namespace(bufnr, hl_ns, 0, -1)
 
-    -- names to paint everywhere they appear: connected handler methods + declared signals
     local highlight_names = {}
     for method in pairs(connections) do
         highlight_names[method] = true
@@ -91,7 +90,7 @@ local function place_signal_signs(bufnr)
         for i, line in ipairs(buf_lines) do
             local fname = line:match("^func%s+([%w_]+)%s*%(")
             if fname and connections[fname] then
-                lines[i] = fname -- gutter icon still only cares about handler methods
+                lines[i] = fname
             end
 
             for name in pairs(highlight_names) do
@@ -113,6 +112,21 @@ local function place_signal_signs(bufnr)
     end
 
     signal_data_by_buf[bufnr] = { lines = lines, connections = connections }
+end
+
+local function place_signal_signs(bufnr)
+    local gd_path = vim.api.nvim_buf_get_name(bufnr)
+    local project_root = find_project_root(gd_path)
+
+    if not project_root then
+        apply_signal_data(bufnr, {})
+        return
+    end
+
+    find_scenes_referencing(gd_path, project_root, function(scene_paths)
+        local connections = get_signal_connections(scene_paths)
+        apply_signal_data(bufnr, connections)
+    end)
 end
 
 _G.godot_has_signals = function()

@@ -53,27 +53,48 @@ local function get_signal_connections(scene_paths)
     return connections
 end
 
-local function get_declared_signals(buf_lines)
-    local declared = {}
-    for _, line in ipairs(buf_lines) do
-        local sname = line:match("^signal%s+([%w_]+)")
-        if sname then
-            declared[sname] = true
-        end
+-- project-wide signal declarations, cached per project root
+local project_signals_cache = {}
+
+local function scan_project_signals(project_root, callback)
+    if project_signals_cache[project_root] then
+        callback(project_signals_cache[project_root])
+        return
     end
-    return declared
+    if vim.fn.executable("rg") == 0 then
+        callback({})
+        return
+    end
+
+    vim.system({
+        "rg", "--no-heading", "--no-filename",
+        "^signal\\s+", project_root, "--glob", "*.gd",
+    }, { text = true }, function(result)
+        local declared = {}
+        if result.code == 0 and result.stdout then
+            for _, line in ipairs(vim.split(result.stdout, "\n", { trimempty = true })) do
+                local sname = line:match("^signal%s+([%w_]+)")
+                if sname then
+                    declared[sname] = true
+                end
+            end
+        end
+        vim.schedule(function()
+            project_signals_cache[project_root] = declared
+            callback(declared)
+        end)
+    end)
 end
 
 local signal_data_by_buf = {}
 local hl_ns = vim.api.nvim_create_namespace("godot_signal_hl")
 
-local function apply_signal_data(bufnr, connections)
+local function apply_signal_data(bufnr, connections, declared_signals)
     if not vim.api.nvim_buf_is_valid(bufnr) then
         return
     end
 
     local buf_lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-    local declared_signals = get_declared_signals(buf_lines)
     local lines = {}
 
     vim.api.nvim_buf_clear_namespace(bufnr, hl_ns, 0, -1)
@@ -93,12 +114,15 @@ local function apply_signal_data(bufnr, connections)
                 lines[i] = fname
             end
 
+            local comment_start = line:find("#")
+            local search_limit = comment_start and (comment_start - 1) or #line
+
             for name in pairs(highlight_names) do
                 local pattern = "%f[%w_]" .. name .. "%f[%W]"
                 local search_start = 1
                 while true do
                     local s, e = line:find(pattern, search_start)
-                    if not s then
+                    if not s or s > search_limit then
                         break
                     end
                     vim.api.nvim_buf_set_extmark(bufnr, hl_ns, i - 1, s - 1, {
@@ -110,7 +134,6 @@ local function apply_signal_data(bufnr, connections)
             end
         end
     end
-
     signal_data_by_buf[bufnr] = { lines = lines, connections = connections }
 end
 
@@ -119,13 +142,28 @@ local function place_signal_signs(bufnr)
     local project_root = find_project_root(gd_path)
 
     if not project_root then
-        apply_signal_data(bufnr, {})
+        apply_signal_data(bufnr, {}, {})
         return
     end
 
+    local connections, declared_signals
+    local pending = 2
+
+    local function try_finish()
+        pending = pending - 1
+        if pending == 0 then
+            apply_signal_data(bufnr, connections, declared_signals)
+        end
+    end
+
     find_scenes_referencing(gd_path, project_root, function(scene_paths)
-        local connections = get_signal_connections(scene_paths)
-        apply_signal_data(bufnr, connections)
+        connections = get_signal_connections(scene_paths)
+        try_finish()
+    end)
+
+    scan_project_signals(project_root, function(declared)
+        declared_signals = declared
+        try_finish()
     end)
 end
 
@@ -175,9 +213,20 @@ return {
     init = function()
         vim.filetype.add({ extension = { gd = "gdscript" } })
 
-        vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
+        vim.api.nvim_create_autocmd("BufEnter", {
             pattern = "*.gd",
             callback = function(args)
+                place_signal_signs(args.buf)
+            end,
+        })
+
+        vim.api.nvim_create_autocmd("BufWritePost", {
+            pattern = "*.gd",
+            callback = function(args)
+                local project_root = find_project_root(vim.api.nvim_buf_get_name(args.buf))
+                if project_root then
+                    project_signals_cache[project_root] = nil
+                end
                 place_signal_signs(args.buf)
             end,
         })

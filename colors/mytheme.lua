@@ -276,6 +276,12 @@ local godot_group = {
     GodotSignalName = { fg = theme.grass },
 }
 
+local toml_group = {
+    tomlTable = { fg = theme.fuchsia },
+    tomlKey = { fg = theme.purple, italic = true },
+    tomlBoolean = { fg = theme.accent }
+}
+
 local function extend(...)
     local groups = {}
     for _, tbl in ipairs({ ... }) do
@@ -306,7 +312,8 @@ local groups = extend(
     vue_group,
     rust_group,
     gds_group,
-    godot_group
+    godot_group,
+    toml_group
 )
 
 for group, opts in pairs(groups) do

@@ -258,6 +258,7 @@ local rust_group = {
     ["@character.special.rust"] = { fg = theme.foreground },
     ["operator.rust"] = { italic = true },
     ["@number.float.rust"] = { fg = theme.blue },
+    ["@lsp.typemod.punctuation.injected.rust"] = { fg = theme.foreground }
 }
 
 local gds_group = {

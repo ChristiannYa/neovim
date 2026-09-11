@@ -32,33 +32,6 @@ local function find_scenes_referencing(gd_path, project_root, callback)
     end)
 end
 
-local function strip_tscn(bufnr, threshold)
-    threshold = threshold or 300
-    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-    local out = {}
-    local stripped_count = 0
-    for _, line in ipairs(lines) do
-        if #line > threshold then
-            local prefix = line:match("^(.-%()") or line:sub(1, 50) .. "("
-            table.insert(out, prefix .. "<omitted " .. #line .. " chars>)")
-            stripped_count = stripped_count + 1
-        else
-            table.insert(out, line)
-        end
-    end
-    return table.concat(out, "\n"), stripped_count
-end
-
-local function copy_stripped_tscn()
-    local bufnr = vim.api.nvim_get_current_buf()
-    local result, stripped_count = strip_tscn(bufnr)
-    vim.fn.setreg("+", result)
-    vim.notify(
-        string.format("Copied to clipboard (%d long line%s stripped)", stripped_count, stripped_count == 1 and "" or "s"),
-        vim.log.levels.INFO
-    )
-end
-
 local function get_signal_connections(scene_paths)
     local connections = {}
     for _, tscn_path in ipairs(scene_paths) do
@@ -246,72 +219,49 @@ _G.godot_is_signal_handler = function(label)
 end
 
 return {
-    {
+    "neovim/nvim-lspconfig",
+    ft = "gdscript",
+    init = function()
+        vim.filetype.add({ extension = { gd = "gdscript" } })
 
-        "neovim/nvim-lspconfig",
-        ft = "gdscript",
-        init = function()
-            vim.filetype.add({ extension = { gd = "gdscript" } })
+        vim.api.nvim_create_autocmd({ "BufEnter", "TextChanged", "TextChangedI" }, {
+            pattern = "*.gd",
+            callback = function(args)
+                debounced_place_signal_signs(args.buf)
+            end,
+        })
 
-            vim.api.nvim_create_autocmd({ "BufEnter", "TextChanged", "TextChangedI" }, {
-                pattern = "*.gd",
-                callback = function(args)
-                    debounced_place_signal_signs(args.buf)
-                end,
-            })
+        vim.api.nvim_create_autocmd("BufWritePost", {
+            pattern = "*.gd",
+            callback = function(args)
+                local project_root = find_project_root(vim.api.nvim_buf_get_name(args.buf))
+                if project_root then
+                    project_signals_cache[project_root] = nil
+                end
+                place_signal_signs(args.buf)
+            end,
+        })
 
-            vim.api.nvim_create_autocmd("BufWritePost", {
-                pattern = "*.gd",
-                callback = function(args)
-                    local project_root = find_project_root(vim.api.nvim_buf_get_name(args.buf))
-                    if project_root then
-                        project_signals_cache[project_root] = nil
-                    end
-                    place_signal_signs(args.buf)
-                end,
-            })
+        vim.api.nvim_create_autocmd("BufDelete", {
+            pattern = "*.gd",
+            callback = function(args)
+                signal_data_by_buf[args.buf] = nil
+            end,
+        })
 
-            vim.api.nvim_create_autocmd("BufDelete", {
-                pattern = "*.gd",
-                callback = function(args)
-                    signal_data_by_buf[args.buf] = nil
-                end,
-            })
+        vim.api.nvim_create_autocmd("FileType", {
+            pattern = "gdscript",
+            callback = function(args)
+                vim.keymap.set("n", "<leader>gds", show_signal_info, {
+                    buffer = args.buf,
+                    desc = "Show Godot signal connection info",
+                })
+            end,
+        })
 
-            vim.api.nvim_create_autocmd("FileType", {
-                pattern = "gdscript",
-                callback = function(args)
-                    vim.keymap.set("n", "<leader>gds", show_signal_info, {
-                        buffer = args.buf,
-                        desc = "Show Godot signal connection info",
-                    })
-                end,
-            })
-
-            vim.api.nvim_create_user_command("GodotSignalInfo", show_signal_info, {})
-        end,
-        config = function()
-            require("lsp").setup({ "gdscript" })
-        end,
-    },
-    {
-        "neovim/nvim-lspconfig",
-        ft = "tscn",
-        init = function()
-            vim.filetype.add({ extension = { tscn = "tscn" } })
-
-            vim.api.nvim_create_autocmd("FileType", {
-                pattern = "tscn",
-                callback = function(args)
-                    vim.keymap.set("n", "<leader>yts", copy_stripped_tscn, {
-                        buffer = args.buf,
-                        desc = "Copy .tscn with long lines stripped",
-                    })
-                end,
-            })
-
-            vim.api.nvim_create_user_command("TscnCopyStripped", copy_stripped_tscn, {})
-        end,
-        config = function() end,
-    },
+        vim.api.nvim_create_user_command("GodotSignalInfo", show_signal_info, {})
+    end,
+    config = function()
+        require("lsp").setup({ "gdscript" })
+    end,
 }

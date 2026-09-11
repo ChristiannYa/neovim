@@ -260,7 +260,10 @@ local rust_group = {
     ["@number.float.rust"] = { fg = theme.blue },
     ["@lsp.typemod.punctuation.injected.rust"] = { fg = theme.foreground },
     ["@comment.documentation.rust"] = { fg = theme.gray },
-    ["@lsp.typemod.method.injected.rust"] = { fg = theme.yellow, italic = true }
+    ["@lsp.typemod.method.injected.rust"] = { fg = theme.yellow, italic = true },
+    ["@lsp.typemod.struct.intraDocLink.rust"] = { fg = theme.fuchsia, underline = true },
+    ["@lsp.typemod.enum.intraDocLink.rust"] = { fg = theme.purple },
+    ["@lsp.typemod.enumMember.intraDocLink.rust"] = { fg = theme.purple, underline = true }
 }
 
 local gds_group = {

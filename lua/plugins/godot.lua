@@ -178,25 +178,6 @@ local function debounced_place_signal_signs(bufnr)
     end, 300)
 end
 
-_G.godot_has_signals = function()
-    local data = signal_data_by_buf[vim.api.nvim_get_current_buf()]
-    return data ~= nil and next(data.lines) ~= nil
-end
-
-_G.godot_signal_icon = function()
-    local icon = vim.trim(require("kind_icons").Signal)
-    local data = signal_data_by_buf[vim.api.nvim_get_current_buf()]
-    if data and data.lines[vim.v.lnum] then
-        return icon
-    end
-    return " "
-end
-
-_G.godot_is_signal_handler = function(label)
-    local data = signal_data_by_buf[vim.api.nvim_get_current_buf()]
-    return data ~= nil and data.connections[label] ~= nil
-end
-
 local function show_signal_info()
     local bufnr = vim.api.nvim_get_current_buf()
     local data = signal_data_by_buf[bufnr]
@@ -216,6 +197,25 @@ local function show_signal_info()
         "To:     " .. (info.to or "?"),
         "Method: " .. method,
     }, "", { border = "rounded", focusable = false })
+end
+
+_G.godot_has_signals = function()
+    local data = signal_data_by_buf[vim.api.nvim_get_current_buf()]
+    return data ~= nil and next(data.lines) ~= nil
+end
+
+_G.godot_signal_icon = function()
+    local icon = vim.trim(require("kind_icons").Signal)
+    local data = signal_data_by_buf[vim.api.nvim_get_current_buf()]
+    if data and data.lines[vim.v.lnum] then
+        return icon
+    end
+    return " "
+end
+
+_G.godot_is_signal_handler = function(label)
+    local data = signal_data_by_buf[vim.api.nvim_get_current_buf()]
+    return data ~= nil and data.connections[label] ~= nil
 end
 
 return {

@@ -182,6 +182,12 @@ local toggleterm_group = {
     ToggleTermMissing = { fg = theme.blend(theme.accent, 0.1) },
 }
 
+local markdown_group = {
+    ColorColumn = { bg = "NONE" },
+    RenderMarkdownCodeInline = { fg = theme.foreground, bg = theme.background },
+    Title = { fg = theme.foreground, bold = true }
+}
+
 local qf_group = {
     qfFileName = { fg = theme.foreground },
     qfLineNr = { fg = theme.foreground },
@@ -308,6 +314,7 @@ local groups = extend(
     netrw_group,
     oil_group,
     toggleterm_group,
+    markdown_group,
     diagnostic_group,
     blinkcmpmenu_group,
     treesitter_group,

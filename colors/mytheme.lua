@@ -184,7 +184,6 @@ local toggleterm_group = {
 
 local markdown_group = {
     ColorColumn = { bg = "NONE" },
-    RenderMarkdownCodeInline = { fg = theme.foreground, bg = theme.background },
     Title = { fg = theme.foreground, bold = true }
 }
 
@@ -192,6 +191,11 @@ local qf_group = {
     qfFileName = { fg = theme.foreground },
     qfLineNr = { fg = theme.foreground },
     QuickFixLine = { fg = theme.accent, bg = "NONE", bold = true },
+}
+
+local git_group = {
+    GitSignsDeletePreview = { fg = theme.red },
+    GitSignsAddPreview = { fg = theme.green }
 }
 
 local treesitter_group = {
@@ -259,7 +263,8 @@ local rust_group = {
     ["@lsp.mod.callable.rust"] = { fg = theme.yellow, italic = false },
     ["@label.rust"] = { fg = theme.green, italic = true },
     ["@character.rust"] = { fg = theme.green },
-    ["@lsp.mod.attribute.rust"] = { fg = theme.mustard },
+    -- ["@lsp.mod.attribute.rust"] = { fg = theme.mustard },
+    -- ["@lsp.typemod.attributeBracket.attribute.rust"] = { fg = theme.foreground },
     ["@string.escape.rust"] = { fg = theme.accent },
     ["@character.special.rust"] = { fg = theme.foreground },
     ["operator.rust"] = { italic = true },
@@ -321,6 +326,7 @@ local groups = extend(
     telescope_group,
     semantic_tokens_group,
     qf_group,
+    git_group,
     lua_group,
     jsts_group,
     vue_group,

@@ -263,8 +263,9 @@ local rust_group = {
     ["@lsp.mod.callable.rust"] = { fg = theme.yellow, italic = false },
     ["@label.rust"] = { fg = theme.green, italic = true },
     ["@character.rust"] = { fg = theme.green },
-    -- ["@lsp.mod.attribute.rust"] = { fg = theme.mustard },
-    -- ["@lsp.typemod.attributeBracket.attribute.rust"] = { fg = theme.foreground },
+    ["@lsp.typemod.derive.macro.rust"] = { fg = theme.grass },
+    ["@lsp.typemod.function.injected.rust"] = { fg = theme.fuchsia },
+    ["@lsp.typemod.function.declaration.rust"] = { fg = theme.yellow },
     ["@string.escape.rust"] = { fg = theme.accent },
     ["@character.special.rust"] = { fg = theme.foreground },
     ["operator.rust"] = { italic = true },
@@ -275,7 +276,8 @@ local rust_group = {
     ["@lsp.typemod.struct.intraDocLink.rust"] = { fg = theme.fuchsia, underline = true },
     ["@lsp.typemod.enum.intraDocLink.rust"] = { fg = theme.purple },
     ["@lsp.typemod.enumMember.intraDocLink.rust"] = { fg = theme.purple, underline = true },
-    ["@lsp.typemod.const.constant.rust"] = { bold = true }
+    ["@lsp.typemod.const.constant.rust"] = { bold = true },
+    ["@module.rust"] = { fg = theme.accent }
 }
 
 local gds_group = {

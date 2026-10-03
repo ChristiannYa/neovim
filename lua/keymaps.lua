@@ -117,3 +117,7 @@ vim.keymap.set({ "x", "o" }, "il", ":<C-u>normal! ^vg_<CR>", {
     desc = "Inner line (no leading/trailing whitespace)",
     silent = true,
 })
+
+vim.keymap.set({ "n", "x" }, "c", '"_c')
+vim.keymap.set("n", "C", '"_C')
+vim.keymap.set("n", "cc", '"_cc')

@@ -188,9 +188,11 @@ local markdown_group = {
 }
 
 local qf_group = {
-    qfFileName = { fg = theme.foreground },
-    qfLineNr = { fg = theme.foreground },
+    qfFileName = { fg = theme.accent },
+    qfLineNr = { fg = theme.foreground_fade },
     QuickFixLine = { fg = theme.accent, bg = "NONE", bold = true },
+    qfSeparator1 = { fg = theme.foreground },
+    qfSeparator2 = { fg = theme.foreground }
 }
 
 local git_group = {

@@ -136,9 +136,9 @@ local diagnostic_group = {
     DiagnosticVirtualTextError = { fg = theme.red, bg = "NONE" },
     DiagnosticVirtualTextWarn = { fg = theme.orange, bg = "NONE" },
 
-    DiagnosticNumHlError = { fg = theme.blend(theme.red, 0.3), bg = "NONE" },
-    DiagnosticNumHlWarn = { fg = theme.blend(theme.orange, 0.3), bg = "NONE" },
-    DiagnosticNumHlHint = { fg = theme.blend(theme.blue2, 0.3), bg = "NONE" },
+    DiagnosticNumHlError = { fg = theme.red, bg = "NONE" },
+    DiagnosticNumHlWarn = { fg = theme.orange, bg = "NONE" },
+    DiagnosticNumHlHint = { fg = theme.blue2, bg = "NONE" },
 
     DiagnosticUnderlineHint = { undercurl = true, sp = theme.blue2 },
     DiagnosticUnderlineError = { undercurl = true, sp = theme.red },

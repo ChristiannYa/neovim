@@ -2,6 +2,7 @@ require("bootstrap")
 require("options")
 require("keymaps")
 require("diagnostics")
+require("yank")
 
 vim.filetype.add({ extension = { tscn = "tscn" } })
 vim.api.nvim_create_autocmd("FileType", {

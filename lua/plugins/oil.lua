@@ -1,3 +1,5 @@
+local theme = require("theme")
+
 return {
     "stevearc/oil.nvim",
     config = function()
@@ -8,11 +10,21 @@ return {
         local devicons = require("nvim-web-devicons")
         local def = "󰉋 "
 
-        local dir_icon_overrides = {
-            src = { icon = def, hl = "OilDir" },
-            bin = { icon = def, hl = "OilDir" },
-            util = { icon = def, hl = "OilDir" },
-            [".git"] = { icon = def, hl = "OilDir" },
+        local dir_icon = {
+            src = { icon = " " },
+            bin = { icon = " " },
+            util = { icon = "󰣪 " },
+            utils = { icon = "󰣪 " },
+            server = { icon = " " },
+            godot = { icon = " " },
+            assets = { icon = " " },
+            global = { icon = "󰇧 " },
+            globals = { icon = "󰇧 " },
+            class = { icon = " " },
+            classes = { icon = " " },
+            scenes = { icon = "󱜋 " },
+            net = { icon = "󰀂 " },
+            [".git"] = { icon = " " },
         }
 
         require("oil.columns").register("icon", {
@@ -21,9 +33,9 @@ return {
                 local ftype = entry[FIELD_TYPE]
 
                 if ftype == "directory" then
-                    local override = dir_icon_overrides[name]
+                    local override = dir_icon[name]
                     if override then
-                        return { override.icon, override.hl }
+                        return { override.icon, "OilDir" }
                     end
                     return { "󰉋 ", "OilDir" }
                 end
@@ -46,7 +58,7 @@ return {
             opts = {
                 override_by_extension = {
                     ["gd"] = {
-                        icon = "",
+                        icon = " ",
                         color = "#3984bf",
                         name = "Gdscript"
                     }

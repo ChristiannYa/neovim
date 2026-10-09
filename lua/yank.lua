@@ -20,13 +20,17 @@ vim.api.nvim_create_autocmd("TextYankPost", {
         local lines = ev.regcontents
         if type(lines) == "string" then lines = { lines } end
 
-        -- cheap check first, then a full comparison against the buffer
+        -- whole-buffer check
         if #lines ~= vim.api.nvim_buf_line_count(0) then return end
         local buf_lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
         if not vim.deep_equal(lines, buf_lines) then return end
 
         local wrapped = name .. "\n\n" .. table.concat(lines, "\n")
 
-        pcall(vim.fn.setreg, "+", wrapped, "v")
+        -- let Neovim's own unnamedplus copy finish first, then overwrite it
+        vim.defer_fn(function()
+            pcall(vim.fn.setreg, "+", wrapped, "v")
+            vim.notify("Yanked: " .. name)
+        end, 100)
     end,
 })

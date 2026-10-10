@@ -1,5 +1,3 @@
-local theme = require("theme")
-
 return {
     "stevearc/oil.nvim",
     config = function()
@@ -50,6 +48,18 @@ return {
 
         require("oil").setup({
             columns = { "icon" },
+            view_options = {
+                show_hidden = false,
+                is_hidden_file = function(name, _)
+                    -- keep the default behavior: dotfiles are hidden
+                    if vim.startswith(name, ".") then
+                        return true
+                    end
+
+                    -- Hide Godot's generated .uid files
+                    return vim.endswith(name, ".uid")
+                end
+            }
         })
     end,
     dependencies = {

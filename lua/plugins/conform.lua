@@ -27,6 +27,11 @@ return {
                     RUSTUP_TOOLCHAIN = "nightly",
                 },
             },
+            gdformat = {
+                prepend_args = {
+                    "--line-length", "78"
+                }
+            }
         },
         format_on_save = function(bufnr)
             local timeout = vim.bo[bufnr].filetype == "gdscript" and 2000 or 500

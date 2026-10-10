@@ -280,6 +280,7 @@ local rust_group = {
     ["@lsp.typemod.enumMember.intraDocLink.rust"] = { fg = theme.purple, underline = true },
     ["@lsp.typemod.function.intraDocLink.rust"] = { fg = theme.yellow },
     ["@lsp.typemod.const.constant.rust"] = { bold = true },
+    ["@lsp.typemod.decorator.library.rust"] = { fg = theme.accent },
     ["@module.rust"] = { fg = theme.accent }
 }
 

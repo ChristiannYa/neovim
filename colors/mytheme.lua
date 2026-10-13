@@ -168,6 +168,12 @@ local oil_group = {
 local git_group = {
     GitSignsDeletePreview = { fg = theme.red },
     GitSignsAddPreview = { fg = theme.green },
+    GitSignsAdd = { fg = theme.green },
+    GitSignsChange = { fg = theme.orange },
+    GitSignsDelete = { fg = theme.red },
+    GitSignsTopdelete = { fg = theme.red },
+    GitSignsChangedelete = { fg = theme.orange },
+    GitSignsUntracked = { fg = theme.blue },
 }
 
 local telescope_group = {

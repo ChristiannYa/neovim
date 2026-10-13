@@ -62,7 +62,7 @@ return {
             },
             win_options = {
                 -- room for the index + working-tree status characters
-                signcolumn = "yes:2",
+                signcolumn = "auto:2",
             }
         })
     end,

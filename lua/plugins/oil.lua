@@ -59,6 +59,10 @@ return {
                     -- Hide Godot's generated .uid files
                     return vim.endswith(name, ".uid")
                 end
+            },
+            win_options = {
+                -- room for the index + working-tree status characters
+                signcolumn = "yes:2",
             }
         })
     end,

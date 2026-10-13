@@ -1,6 +1,6 @@
 _G.custom_statuscolumn = function()
     if vim.bo.filetype == "oil" then
-        return "   "
+        return "%s "
     end
     if vim.bo.buftype ~= "" then
         return ""
@@ -69,15 +69,10 @@ vim.api.nvim_create_autocmd("BufWinEnter", {
     pattern = "?*",
     callback = function()
         local win = vim.api.nvim_get_current_win()
-
         vim.defer_fn(function()
-            if not vim.api.nvim_win_is_valid(win) then
-                return
+            if _G.ufo_restore_view then
+                _G.ufo_restore_view(win)
             end
-            -- snapshot cursor here, AFTER telescope's jump has already landed
-            local pos_before = vim.api.nvim_win_get_cursor(win)
-            vim.cmd("silent! loadview")
-            pcall(vim.api.nvim_win_set_cursor, win, pos_before)
         end, 30)
     end,
 })

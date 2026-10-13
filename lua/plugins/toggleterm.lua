@@ -138,6 +138,10 @@ local function count_active()
     return lcount
 end
 
+local function refresh_git()
+    vim.api.nvim_exec_autocmds("User", { pattern = "RefreshOilGit" })
+end
+
 _G.toggleterm_status = function()
     local active = count_active()
     if active == 0 then
@@ -234,6 +238,7 @@ return {
 
             vim.schedule(function()
                 vim.cmd("redrawstatus")
+                refresh_git()
             end)
         end, { desc = "Exit current terminal" })
 
@@ -273,6 +278,7 @@ return {
 
             vim.schedule(function()
                 vim.cmd("redrawstatus")
+                refresh_git()
             end)
         end, { desc = "delete current terminal" })
 
@@ -327,6 +333,7 @@ return {
             callback = function()
                 vim.schedule(function()
                     vim.cmd("redrawstatus")
+                    refresh_git()
                 end)
             end,
         })

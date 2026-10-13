@@ -9,7 +9,7 @@ return {
         local def = "󰉋 "
 
         local dir_icon = {
-            src = { icon = " " },
+            src = { icon = " " },
             bin = { icon = " " },
             util = { icon = "󰣪 " },
             utils = { icon = "󰣪 " },

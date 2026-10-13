@@ -161,6 +161,13 @@ local netrw_group = {
 local oil_group = {
     OilDir = { fg = theme.accent, bg = "NONE" },
     OilDirIcon = { fg = theme.accent, bg = "NONE" },
+    OilGitStatusIndex = { fg = theme.blue },
+    OilGitStatusWorkingTree = { fg = theme.accent },
+}
+
+local git_group = {
+    GitSignsDeletePreview = { fg = theme.red },
+    GitSignsAddPreview = { fg = theme.green },
 }
 
 local telescope_group = {
@@ -193,11 +200,6 @@ local qf_group = {
     QuickFixLine = { fg = theme.accent, bg = "NONE", bold = true },
     qfSeparator1 = { fg = theme.foreground },
     qfSeparator2 = { fg = theme.foreground }
-}
-
-local git_group = {
-    GitSignsDeletePreview = { fg = theme.red },
-    GitSignsAddPreview = { fg = theme.green }
 }
 
 local treesitter_group = {

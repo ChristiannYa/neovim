@@ -1,6 +1,6 @@
 _G.custom_statuscolumn = function()
     if vim.bo.filetype == "oil" then
-        return "%s "
+        return "  %s "
     end
     if vim.bo.buftype ~= "" then
         return ""

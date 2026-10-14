@@ -289,6 +289,7 @@ local rust_group = {
     ["@lsp.typemod.enum.intraDocLink.rust"] = { fg = theme.purple },
     ["@lsp.typemod.enumMember.intraDocLink.rust"] = { fg = theme.purple, underline = true },
     ["@lsp.typemod.function.intraDocLink.rust"] = { fg = theme.yellow },
+    ["@lsp.typemod.const.intraDocLink.rust"] = { fg = theme.foreground, bold = true }
 }
 
 local gds_group = {

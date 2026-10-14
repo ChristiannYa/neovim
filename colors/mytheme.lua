@@ -251,6 +251,7 @@ local vue_group = {
 }
 
 local rust_group = {
+    ["@module.rust"] = { fg = theme.accent },
     ["@lsp.mod.async.rust"] = { italic = true },
     ["@lsp.mod.mutable.rust"] = { underline = false },
     ["@lsp.type.enum.rust"] = { fg = theme.purple },
@@ -269,7 +270,6 @@ local rust_group = {
     ["@lsp.type.lifetime.rust"] = { fg = theme.accent },
     ["@lsp.type.escapeSequence.rust"] = { fg = theme.accent },
     ["@lsp.type.namespace.rust"] = { fg = theme.accent },
-    ["@lsp.mod.documentation.rust"] = { fg = theme.gray, italic = false },
     ["@lsp.mod.callable.rust"] = { fg = theme.yellow, italic = false },
     ["@label.rust"] = { fg = theme.green, italic = true },
     ["@character.rust"] = { fg = theme.green },
@@ -281,15 +281,14 @@ local rust_group = {
     ["operator.rust"] = { italic = true },
     ["@number.float.rust"] = { fg = theme.blue },
     ["@lsp.typemod.punctuation.injected.rust"] = { fg = theme.foreground },
-    ["@comment.documentation.rust"] = { fg = theme.gray },
     ["@lsp.typemod.method.injected.rust"] = { fg = theme.yellow, italic = true },
+    ["@lsp.typemod.const.constant.rust"] = { bold = true },
+    ["@lsp.typemod.decorator.library.rust"] = { fg = theme.accent },
+    ["@lsp.typemod.comment.documentation.rust"] = { fg = theme.gray, italic = true },
     ["@lsp.typemod.struct.intraDocLink.rust"] = { fg = theme.fuchsia, underline = true },
     ["@lsp.typemod.enum.intraDocLink.rust"] = { fg = theme.purple },
     ["@lsp.typemod.enumMember.intraDocLink.rust"] = { fg = theme.purple, underline = true },
     ["@lsp.typemod.function.intraDocLink.rust"] = { fg = theme.yellow },
-    ["@lsp.typemod.const.constant.rust"] = { bold = true },
-    ["@lsp.typemod.decorator.library.rust"] = { fg = theme.accent },
-    ["@module.rust"] = { fg = theme.accent }
 }
 
 local gds_group = {

@@ -12,6 +12,7 @@ local def_group = {
     Normal = { fg = theme.foreground, bg = "NONE" },
     NormalFloat = { fg = theme.foreground, bg = "NONE" },
     FloatBorder = { fg = theme.accent, bg = "NONE" },
+    FloatTitle = { fg = theme.accent, bold = true },
     Pmenu = { fg = theme.foreground, bg = "NONE" },
     Normalnc = { fg = theme.foreground, bg = "NONE" },
     MatchParen = { fg = theme.accent, bold = true },

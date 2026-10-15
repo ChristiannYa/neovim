@@ -174,6 +174,8 @@ local git_group = {
     GitSignsTopdelete = { fg = theme.red },
     GitSignsChangedelete = { fg = theme.orange },
     GitSignsUntracked = { fg = theme.blue },
+    GitSignsDeleteInline = { bg = theme.blend(theme.red, 0.1) },
+    GitSignsChangeInline = { bg = theme.blend(theme.green, 0.1) },
 }
 
 local telescope_group = {

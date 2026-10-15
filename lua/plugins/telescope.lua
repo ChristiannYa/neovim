@@ -34,8 +34,12 @@ return {
             desc = "find files",
         })
 
-        vim.keymap.set("n", "<leader>fg", builtin.live_grep, {
-            desc = "search text in project",
+        vim.keymap.set("n", "<leader>fg", function()
+            builtin.live_grep({
+                additional_args = { "--fixed-strings" },
+            })
+        end, {
+            desc = "search text in project (literal)",
         })
 
         vim.keymap.set("n", "<leader>fh", function()

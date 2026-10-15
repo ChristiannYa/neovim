@@ -37,6 +37,7 @@ return {
         vim.keymap.set("n", "<leader>fg", function()
             builtin.live_grep({
                 additional_args = { "--fixed-strings" },
+                path_display = { "tail" },
             })
         end, {
             desc = "search text in project (literal)",

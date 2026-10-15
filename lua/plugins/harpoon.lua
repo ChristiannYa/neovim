@@ -90,7 +90,7 @@ return {
         end, { desc = "Harpoon: current group (quick menu)" })
 
         -- Switch group
-        vim.keymap.set("n", "<leader>hc", function()
+        vim.keymap.set("n", "<leader>hg", function()
             vim.ui.select(all_groups(), { prompt = "Harpoon group" }, function(choice)
                 if choice then
                     current = choice

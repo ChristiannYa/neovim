@@ -162,8 +162,8 @@ local netrw_group = {
 local oil_group = {
     OilDir = { fg = theme.accent, bg = "NONE" },
     OilDirIcon = { fg = theme.accent, bg = "NONE" },
-    OilGitStatusIndex = { fg = theme.blue },
-    OilGitStatusWorkingTree = { fg = theme.accent },
+    OilGitStatusIndex = { fg = theme.green },
+    OilGitStatusWorkingTree = { fg = theme.blue },
 }
 
 local git_group = {

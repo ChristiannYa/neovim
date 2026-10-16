@@ -30,6 +30,12 @@ local rust_override_variants = {
     ["&mut self"] = true,
 }
 
+local function is_pattern_variant_rs(ctx)
+    return vim.bo.filetype == "rust"
+        and ctx.kind == "Variable"
+        and ctx.label:match("^%u") ~= nil
+end
+
 local function resolve_kind_hl(ctx)
     if vim.bo.filetype == "gdscript" then
         if ctx.kind == "Event" or (_G.godot_is_signal_handler and _G.godot_is_signal_handler(ctx.label)) then
@@ -47,6 +53,9 @@ local function resolve_kind_hl(ctx)
     end
     if ctx.kind == "Value" and rust_override_variants[ctx.label] then
         return "BlinkCmpKindBuiltinType"
+    end
+    if is_pattern_variant_rs(ctx) then
+        return "BlinkCmpKindEnumMember"
     end
     return "BlinkCmpKind" .. ctx.kind
 end
@@ -138,6 +147,9 @@ return {
                                 end
                                 if ctx.kind == "Value" and rust_override_variants[ctx.label] then
                                     icon = kind_icons.Variable
+                                end
+                                if is_pattern_variant_rs(ctx) then
+                                    icon = kind_icons.EnumMember
                                 end
                                 return " " .. icon .. ctx.icon_gap
                             end,

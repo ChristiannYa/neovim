@@ -2,7 +2,12 @@ return {
     "rmagatti/goto-preview",
     dependencies = { "rmagatti/logger.nvim" },
     event = "BufEnter",
-    opts = {},
+    opts = {
+        references = {
+            provider = "telescope",
+            telescope = { hide_preview = false },
+        },
+    },
     keys = {
         {
             "gpd",

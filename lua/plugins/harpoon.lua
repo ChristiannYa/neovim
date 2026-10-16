@@ -41,6 +41,8 @@ return {
             return harpoon:list(current)
         end
 
+        local title = "Harpoon (" .. current .. ") "
+
         local function open_telescope()
             local h_list = list()
 
@@ -53,7 +55,7 @@ return {
             end
 
             require("telescope.pickers").new({}, {
-                prompt_title = "Harpoon: " .. current,
+                prompt_title = title,
                 finder = make_finder(),
                 previewer = conf.file_previewer({}),
                 sorter = conf.generic_sorter({}),
@@ -86,7 +88,7 @@ return {
 
         -- Harpoon's own menu: use this to reorder/edit entries
         vim.keymap.set("n", "<leader>hm", function()
-            harpoon.ui:toggle_quick_menu(list(), { title = " Harpoon (" .. current .. ") " })
+            harpoon.ui:toggle_quick_menu(list(), { title = title })
         end, { desc = "Harpoon: current group (quick menu)" })
 
         -- Switch group

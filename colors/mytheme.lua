@@ -19,7 +19,7 @@ local def_group = {
     SignColumn = { fg = theme.foreground, bg = "NONE" },
     EndOfBuffer = { fg = theme.background, bg = "NONE" },
     LineNr = { fg = theme.foreground_fade, bg = "NONE" },
-    CursorLineNr = { fg = theme.accent, bg = "NONE", bold = true },
+    CursorLineNr = { fg = theme.foreground, bg = "NONE", bold = true },
     CursorLine = { bg = "NONE" },
     Visual = { bg = theme.blend(theme.accent, 0.1) },
     StatusLine = { fg = theme.foreground, bg = "NONE" },

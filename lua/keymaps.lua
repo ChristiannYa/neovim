@@ -72,7 +72,23 @@ vim.keymap.set("n", "gdv", function()
     vim.lsp.buf.definition()
 end, { desc = "Go to definition (vertical)" })
 vim.keymap.set("n", "gdr", function()
-    vim.lsp.buf.references()
+    vim.lsp.buf.references(nil, {
+        on_list = function(opts)
+            if vim.bo.filetype == "gdscript" then
+                opts.items = vim.tbl_filter(function(item)
+                    -- drop hits that sit after a '#' on their line
+                    local before = (item.text or ""):sub(1, item.col - 1)
+                    return not before:find("#", 1, true)
+                end, opts.items)
+            end
+            if vim.tbl_isempty(opts.items) then
+                vim.notify("No references found", vim.log.levels.INFO)
+                return
+            end
+            vim.fn.setqflist({}, " ", opts)
+            vim.cmd("botright copen")
+        end,
+    })
 end, { desc = "Go to definition references" })
 
 vim.keymap.set("n", "ca", vim.lsp.buf.code_action, {

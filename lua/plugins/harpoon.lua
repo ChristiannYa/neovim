@@ -41,7 +41,7 @@ return {
             return harpoon:list(current)
         end
 
-        local title = "Harpoon (" .. current .. ") "
+        local function title() return "Harpoon (" .. current .. ") " end
 
         local function open_telescope()
             local h_list = list()
@@ -55,7 +55,7 @@ return {
             end
 
             require("telescope.pickers").new({}, {
-                prompt_title = title,
+                prompt_title = title(),
                 finder = make_finder(),
                 previewer = conf.file_previewer({}),
                 sorter = conf.generic_sorter({}),
@@ -79,7 +79,10 @@ return {
                 vim.notify("Harpoon: can't add an oil buffer", vim.log.levels.WARN)
                 return
             end
-            list():add()
+            local h_list = list() -- call first so `current` is validated
+            h_list:add()
+            local file = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":.")
+            vim.notify("Harpoon: added " .. file .. " to " .. current, vim.log.levels.INFO)
         end, { desc = "Harpoon: add file" })
 
         -- Telescope picker for the current group
@@ -88,7 +91,7 @@ return {
 
         -- Harpoon's own menu: use this to reorder/edit entries
         vim.keymap.set("n", "<leader>hm", function()
-            harpoon.ui:toggle_quick_menu(list(), { title = title })
+            harpoon.ui:toggle_quick_menu(list(), { title = title() })
         end, { desc = "Harpoon: current group (quick menu)" })
 
         -- Switch group
